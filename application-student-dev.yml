@@ -1,1 +1,78 @@
-yyyyyyyyyyyuuuuuuuuuuuuuuuuv
+server:
+ port: 56711
+ #servlet:
+ #  context-path: /kytms-business
+
+spring:
+ datasource:
+   driver-class-name: com.mysql.jdbc.Driver
+   url: jdbc:mysql://localhost:3306/kytms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+   username: root
+   password: root
+
+ application:
+   name: jwxt-student #指定服务名
+
+ servlet:
+   multipart:
+     max-file-size: -1
+     max-request-size: -1
+
+
+mybatis-plus:
+ configuration:
+   map-underscore-to-camel-case: true
+   log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+ mapper-locations: classpath:com/kytms/*/mapper/*.xml
+
+
+
+ftp:
+ host: 192.168.5.210
+ port: 22
+ username: root
+ password: root
+
+
+#首页显示的微服务名默认为：机器主机名:应用名称:应用端口，
+#也就是：${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${server.port}}
+eureka:
+ client:
+   service-url:
+     defaultZone: http://localhost:56798/eureka/,http://localhost:56799/eureka/
+ instance:
+   prefer-ip-address: true
+   instance-id: student #在注册中心页面显示的微服务名
+
+
+
+ribbon:
+ eureka:
+   enabled: true
+ ReadTimeout: 60000
+ ConnectTimeout: 60000
+# 类级
+feign:
+ client:
+   config:
+     default:
+       connectTimeout: 50000
+       readTimeout: 50000
+       loggerLevel: full
+ hystrix:
+   enabled: true
+
+# 配置断路器   工厂级的
+hystrix:
+ command:
+   default:
+     circuitBreaker:
+       enabled: true   #启动断路器
+       requestVolumeThreshold: 10  #请求数达到后才计算
+       sleepWindowInMilliseconds: 10000  #休眠时间
+       errorThresholdPercentage: 50    #错误率
+     execution:
+       isolation:
+         thread:   #熔断策略:线程
+           timeoutInMilliseconds: 60000  #设置请求超时时间（默认是一秒） 超时后会走后备方法
